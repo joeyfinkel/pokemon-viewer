@@ -1,27 +1,28 @@
-import { useEffect } from 'react';
-import axios from 'axios';
-import { usePokemon } from '../hooks/usePokemon';
+import { Box, Container, HStack } from '@chakra-ui/react';
+import { useState } from 'react';
+import { ActivePokemonContextProvider } from '../context/activePokemonContext';
+import { ActivePokemonCard } from './ActivePokemonCard';
+import { PokemonWrapper } from './PokemonWrapper';
 
 export const Pokemon = () => {
-  const pokemon = usePokemon();
-
-  useEffect(() => {
-    const get = async () => {
-      const data = await axios.get(
-        'https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0'
-      );
-
-      console.log(data.data);
-    };
-
-    get();
-  }, []);
+  const [active, setActive] = useState(false);
 
   return (
-    <>
-      {pokemon.map((character) => (
-        <p>{character?.name}</p>
-      ))}
-    </>
+    <ActivePokemonContextProvider active={active} setActive={setActive}>
+      <Container maxW='100vw' py={2} overflowY='hidden'>
+        {active ? (
+          <HStack spacing={4} overflowY='hidden'>
+            <Box maxH='100vh' overflowY='scroll' overflowX='hidden'>
+              <PokemonWrapper active={active} />
+            </Box>
+            <Box flexGrow='1'>
+              <ActivePokemonCard />
+            </Box>
+          </HStack>
+        ) : (
+          <PokemonWrapper active={active} />
+        )}
+      </Container>
+    </ActivePokemonContextProvider>
   );
 };
