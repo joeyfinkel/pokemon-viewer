@@ -2,7 +2,7 @@ import { Flex } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { BaseHeadingProps, DataWithHeading } from './DataWithHeading';
 import { EvolutionCard } from './EvolutionCard';
-import { PokemonCard } from './PokemonCard';
+import { PokemonAvatarCard } from './PokemonAvatarCard';
 
 interface Props extends BaseHeadingProps {
   names: (string | undefined)[];
@@ -37,7 +37,7 @@ export const EvolutionCards: React.FC<Props> = ({
             />
           ))}
         </Flex>
-        <PokemonCard url={url(current ?? '')} />
+        <PokemonAvatarCard url={url(current ?? '')} />
       </Flex>
     </DataWithHeading>
   );

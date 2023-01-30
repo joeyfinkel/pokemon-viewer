@@ -17,16 +17,18 @@ export const BasicInformation: React.FC<Props> = ({
       <Text>Id: {pokemon?.id}</Text>
       <Text>Height: {pokemon?.height}</Text>
       <Text>Weight: {pokemon?.weight}</Text>
-      <Text>
-        Base experience:{' '}
-        {xpBar ? (
+      {xpBar ? (
+        <Box>
+          Base experience:{' '}
           <Progress size='sm' value={pokemon?.base_experience} max={500}>
-            <ProgressLabel>{pokemon?.base_experience}</ProgressLabel>
+            <ProgressLabel color='inherit'>
+              {pokemon?.base_experience}
+            </ProgressLabel>
           </Progress>
-        ) : (
-          pokemon?.base_experience
-        )}
-      </Text>
+        </Box>
+      ) : (
+        <Text>Base experience: {pokemon.base_experience}</Text>
+      )}
     </Box>
   );
 };

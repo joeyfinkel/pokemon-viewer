@@ -9,7 +9,13 @@ export const Pokemon = () => {
 
   return (
     <ActivePokemonContextProvider active={active} setActive={setActive}>
-      <Container maxW='100vw' py={2} overflowY='hidden'>
+      <Container
+        maxW='100vw'
+        pt='1'
+        pb='2'
+        overflowY='hidden'
+        maxH={active ? '100vh' : ''}
+      >
         {active ? (
           <HStack spacing={4} overflowY='hidden'>
             <Box maxH='100vh' overflowY='scroll' overflowX='hidden'>

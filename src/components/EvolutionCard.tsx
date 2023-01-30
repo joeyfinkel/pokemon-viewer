@@ -31,12 +31,10 @@ export const EvolutionCard: React.FC<Props> = ({
       maxW={width}
       maxH={height}
       variant='elevated'
-      colorScheme='green'
       overflow='hidden'
-      me='3'
       direction='row'
-      bgColor={color}
       role='button'
+      bgColor={color}
       onClick={onClick}
       onMouseEnter={() => setColor('gray.500')}
       onMouseLeave={() => setColor('gray.400')}

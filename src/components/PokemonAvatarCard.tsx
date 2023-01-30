@@ -13,17 +13,11 @@ import { Pokemon } from '../types';
 
 interface Props {
   url: string;
-  id: string;
-  height: CardProps['maxH'];
-  width: CardProps['maxW'];
+  height?: CardProps['maxH'];
+  width?: CardProps['maxW'];
 }
 
-export const PokemonAvatarCard: React.FC<Props> = ({
-  url,
-  id,
-  height,
-  width,
-}: Props) => {
+export const PokemonAvatarCard: React.FC<Props> = ({ url, height, width }) => {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [color, setColor] = useState<CardProps['bgColor']>('gray.400');
 

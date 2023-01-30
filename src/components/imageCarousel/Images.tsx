@@ -18,7 +18,11 @@ export const Images: React.FC<Props> = ({
   const [key, sprite] = entries;
 
   return (
-    <Tooltip label={name} openDelay={500} closeDelay={300}>
+    <Tooltip
+      label={name?.replaceAll('_', ' ')}
+      openDelay={500}
+      closeDelay={300}
+    >
       <Image
         objectFit='cover'
         maxW={{ base: '100%', sm: '200px' }}
@@ -27,9 +31,8 @@ export const Images: React.FC<Props> = ({
         role='button'
         loading='lazy'
         onClick={onClick}
-        border={key === currentImageName ? '1px solid black' : ''}
         borderRadius='1rem'
-        bgColor={color}
+        bgColor={key === currentImageName ? 'gray.100' : color}
         onMouseEnter={() => setColor('gray.100')}
         onMouseLeave={() => setColor('')}
       />

@@ -1,4 +1,4 @@
-import { Flex, Image, ImageProps, Text } from '@chakra-ui/react';
+import { Flex, Image, Text } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useActivePokemon } from '../../context/activePokemonContext';
 import { Entries, PokemonSprites } from '../../types';
@@ -11,8 +11,6 @@ export const ImageCarousel: React.FC = () => {
   const spriteEntries = Object.entries(
     sprites ?? {}
   ) as Entries<PokemonSprites>[];
-
-  const [color, setColor] = useState<ImageProps['bgColor']>('');
 
   const [currentImage, setCurrentImage] = useState(
     spriteEntries.find(([key]) => key === 'front_default')
@@ -31,7 +29,7 @@ export const ImageCarousel: React.FC = () => {
       <Flex direction='column' align='center'>
         <Image
           objectFit='cover'
-          height={{ base: '100%', sm: '250px' }}
+          height={{ base: '100%', sm: '300px' }}
           src={imgSrc}
           style={{ imageRendering: 'pixelated' }}
           loading='lazy'
@@ -39,17 +37,16 @@ export const ImageCarousel: React.FC = () => {
         <Text fontWeight='bold'>{capitalizeWord(name ?? '')}</Text>
       </Flex>
 
-      <Flex justify='center'>
+      <Flex justify='center' mb='2' gap='2'>
         {spriteEntries.map(([key, sprite], idx) =>
           typeof sprite === 'string' ? (
-            <Flex key={idx}>
-              <Images
-                currentImageName={imgName}
-                name={name}
-                onClick={() => setCurrentImage([key, sprite])}
-                entries={[key, sprite]}
-              />
-            </Flex>
+            <Images
+              key={idx}
+              currentImageName={imgName}
+              name={key}
+              onClick={() => setCurrentImage([key, sprite])}
+              entries={[key, sprite]}
+            />
           ) : null
         )}
       </Flex>

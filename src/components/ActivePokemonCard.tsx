@@ -12,7 +12,7 @@ import {
   IconButton,
   IconProps,
   SimpleGrid,
-  Tooltip
+  Tooltip,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -104,7 +104,7 @@ export const ActivePokemonCard: React.FC = () => {
   }, [pokemon]);
 
   return (
-    <Card overflow='hidden' variant='outline' height='100vh'>
+    <Card overflow='hidden' variant='outline' height='95vh' mb='2'>
       <CardHeader>
         <Flex justify='space-between' align='center'>
           <Flex align='center' gap='2'>
@@ -135,9 +135,11 @@ export const ActivePokemonCard: React.FC = () => {
 
               <DataWithHeading {...headingsProps} text='Types'>
                 <Box border='1px solid black' borderRadius='1rem' p='2'>
-                  {activePokemon?.types.map((resource) => (
-                    <Types resource={resource} />
-                  ))}
+                  <Flex gap='2'>
+                    {activePokemon?.types.map((resource, idx) => (
+                      <Types key={idx} resource={resource} />
+                    ))}
+                  </Flex>
                 </Box>
               </DataWithHeading>
 
