@@ -7,7 +7,7 @@ import {
   CardProps,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { usePokemon } from '../hooks/usePokemon';
+import { usePokemon } from '../../../hooks/usePokemon';
 
 interface Props {
   url: string;

@@ -7,6 +7,9 @@ interface IActivePokemonContext {
 
   activePokemon?: Pokemon | null;
   setActivePokemon?: React.Dispatch<React.SetStateAction<Pokemon | null>>;
+
+  mainPicture?: string;
+  setMainPicture?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 interface IActivePokemonContextProvider
@@ -24,6 +27,7 @@ export const ActivePokemonContextProvider = ({
   setActive,
 }: IActivePokemonContextProvider) => {
   const [activePokemon, setActivePokemon] = useState<Pokemon | null>(null);
+  const [mainPicture, setMainPicture] = useState<string>('');
 
   return (
     <ActivePokemonContext.Provider
@@ -32,6 +36,8 @@ export const ActivePokemonContextProvider = ({
         setActive,
         activePokemon,
         setActivePokemon,
+        mainPicture,
+        setMainPicture,
       }}
     >
       {children}{' '}

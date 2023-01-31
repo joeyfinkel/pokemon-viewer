@@ -1,6 +1,6 @@
 import { Image, ImageProps, Tooltip } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { Entries, PokemonSprites } from '../../types';
+import { Entries, PokemonSprites } from '../../../types';
 
 interface Props extends Pick<ImageProps, 'onClick'> {
   currentImageName: string;

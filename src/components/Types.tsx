@@ -1,13 +1,19 @@
-import { Tag } from '@chakra-ui/react';
+import { Flex, FlexProps, Tag } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
-import { PokemonType } from '../types';
+import { Pokemon, PokemonType, TypeOptions } from '../types';
 
-interface Props {
-  resource: PokemonType;
+interface Props extends FlexProps {
+  pokemon: Pokemon;
 }
 
-export const Types: React.FC<Props> = ({ resource }) => {
-  const type = useMemo(() => resource.type.name, []);
-
-  return <Tag>{type}</Tag>;
+export const Types: React.FC<Props> = ({ pokemon, ...rest }) => {
+  return (
+    <Flex {...rest}>
+      {pokemon.types.map(({ type }, idx) => (
+        <Tag key={idx} variant={type.name}>
+          {type.name}
+        </Tag>
+      ))}
+    </Flex>
+  );
 };

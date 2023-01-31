@@ -1,7 +1,7 @@
 import { Box, Container, HStack } from '@chakra-ui/react';
 import { useState } from 'react';
 import { ActivePokemonContextProvider } from '../context/activePokemonContext';
-import { ActivePokemonCard } from './ActivePokemonCard';
+import { ActivePokemonCard } from './card/ActiveCard';
 import { PokemonWrapper } from './PokemonWrapper';
 
 export const Pokemon = () => {

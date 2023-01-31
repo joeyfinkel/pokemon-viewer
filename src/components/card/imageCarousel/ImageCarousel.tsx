@@ -1,22 +1,28 @@
 import { Flex, Image, Text } from '@chakra-ui/react';
-import React, { useState } from 'react';
-import { useActivePokemon } from '../../context/activePokemonContext';
-import { Entries, PokemonSprites } from '../../types';
-import { capitalizeWord } from '../../utils';
+import React, { useEffect, useState } from 'react';
+import { Entries, Pokemon, PokemonSprites } from '../../../types';
+import { capitalizeWord } from '../../../utils/utils';
 import { Images } from './Images';
 
-export const ImageCarousel: React.FC = () => {
-  const { activePokemon } = useActivePokemon();
-  const { sprites } = activePokemon ?? {};
-  const spriteEntries = Object.entries(
-    sprites ?? {}
-  ) as Entries<PokemonSprites>[];
+interface Props {
+  pokemon: Pokemon;
+}
 
+export const ImageCarousel: React.FC<Props> = ({ pokemon }) => {
+  const entries = Object.entries(pokemon.sprites) as Entries<PokemonSprites>[];
   const [currentImage, setCurrentImage] = useState(
-    spriteEntries.find(([key]) => key === 'front_default')
+    entries.find(([key]) => key === 'front_default')
   );
   const [imgName, imgSrc] = currentImage ?? [];
   const name = imgName?.replaceAll('_', ' ');
+
+  useEffect(() => {
+    const resetPicture = () => {
+      setCurrentImage(entries.find(([key]) => key === 'front_default'));
+    };
+
+    resetPicture();
+  }, [pokemon]);
 
   return (
     <Flex
@@ -38,7 +44,7 @@ export const ImageCarousel: React.FC = () => {
       </Flex>
 
       <Flex justify='center' mb='2' gap='2'>
-        {spriteEntries.map(([key, sprite], idx) =>
+        {entries.map(([key, sprite], idx) =>
           typeof sprite === 'string' ? (
             <Images
               key={idx}

@@ -15,16 +15,23 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useActivePokemon } from '../context/activePokemonContext';
-import { usePokemon } from '../hooks/usePokemon';
-import { EvolutionChain, Pokemon, PokemonSpecies } from '../types';
-import { capitalizeWord } from '../utils';
-import { BasicInformation } from './BasicInformation';
-import { BaseHeadingProps, DataWithHeading } from './DataWithHeading';
-import { EvolutionCards } from './EvolutionCards';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useActivePokemon } from '../../context/activePokemonContext';
+import { usePokemon } from '../../hooks/usePokemon';
+import {
+  Entries,
+  EvolutionChain,
+  Pokemon,
+  PokemonSpecies,
+  PokemonSprites,
+} from '../../types';
+import { capitalizeWord } from '../../utils/utils';
+import { BasicInformation } from '../BasicInformation';
+import { BaseHeadingProps, DataWithHeading } from '../DataWithHeading';
+import { EvolutionCards } from './evolution/Cards';
 import { ImageCarousel } from './imageCarousel/ImageCarousel';
-import { Types } from './Types';
+import { Types } from '../Types';
+import { useHotKey } from '../../hooks/useHotKey';
 
 export const ActivePokemonCard: React.FC = () => {
   const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
@@ -32,9 +39,11 @@ export const ActivePokemonCard: React.FC = () => {
     (string | undefined)[]
   >([]);
 
-  const { active, activePokemon, setActive } = useActivePokemon();
+  const { active, activePokemon, setActive, setActivePokemon, setMainPicture } =
+    useActivePokemon();
 
   const pokemon = usePokemon(50, 0);
+  const key = useHotKey();
 
   const headingsProps: BaseHeadingProps = { gap: 4, headingSize: 'md' };
   const arrowProps: IconProps = { boxSize: 8, role: 'button', focusable: true };
@@ -50,6 +59,22 @@ export const ActivePokemonCard: React.FC = () => {
       previous: index === -1 ? undefined : pokemon[prev].name,
     };
   }, [allPokemon, activePokemon, pokemon]);
+
+  const rightArrowOnClick = () => {
+    const index = allPokemon.findIndex(
+      ({ name }) => name === surroundingPokemon.next
+    );
+
+    setActivePokemon?.(allPokemon[index]);
+  };
+
+  const leftArrowOnClick = () => {
+    const index = allPokemon.findIndex(
+      ({ name }) => name === surroundingPokemon.previous
+    );
+
+    setActivePokemon?.(allPokemon[index]);
+  };
 
   useEffect(() => {
     const getAllEvolutionNames = async () => {
@@ -103,6 +128,15 @@ export const ActivePokemonCard: React.FC = () => {
     getAllPokemon();
   }, [pokemon]);
 
+  useEffect(() => {
+    const switchPokemon = () => {
+      if (key === 'ArrowRight') rightArrowOnClick();
+      if (key === 'ArrowLeft') leftArrowOnClick();
+    };
+
+    switchPokemon();
+  }, [key]);
+
   return (
     <Card overflow='hidden' variant='outline' height='95vh' mb='2'>
       <CardHeader>
@@ -123,32 +157,35 @@ export const ActivePokemonCard: React.FC = () => {
       <CardBody>
         <Flex direction='column'>
           <SimpleGrid templateColumns='0.8fr 1.2fr' gap='2'>
-            <Flex direction='column' justify='space-between' gap='4'>
-              <DataWithHeading {...headingsProps} text='Basic Information'>
-                <BasicInformation
-                  pokemon={activePokemon!}
-                  border='1px solid black'
-                  borderRadius='1rem'
-                  p='2'
-                />
-              </DataWithHeading>
+            {activePokemon && (
+              <>
+                <Flex direction='column' justify='space-between' gap='4'>
+                  <DataWithHeading {...headingsProps} text='Basic Information'>
+                    <BasicInformation
+                      pokemon={activePokemon}
+                      border='1px solid black'
+                      borderRadius='1rem'
+                      p='2'
+                    />
+                  </DataWithHeading>
 
-              <DataWithHeading {...headingsProps} text='Types'>
-                <Box border='1px solid black' borderRadius='1rem' p='2'>
-                  <Flex gap='2'>
-                    {activePokemon?.types.map((resource, idx) => (
-                      <Types key={idx} resource={resource} />
-                    ))}
-                  </Flex>
-                </Box>
-              </DataWithHeading>
+                  <DataWithHeading {...headingsProps} text='Types'>
+                    <Box border='1px solid black' borderRadius='1rem' p='2'>
+                      <Types pokemon={activePokemon} gap='2' />
+                    </Box>
+                  </DataWithHeading>
 
-              <EvolutionCards {...headingsProps} names={allEvolutionNames} />
-            </Flex>
+                  <EvolutionCards
+                    {...headingsProps}
+                    names={allEvolutionNames}
+                  />
+                </Flex>
 
-            <DataWithHeading {...headingsProps} text='Images'>
-              <ImageCarousel />
-            </DataWithHeading>
+                <DataWithHeading {...headingsProps} text='Images'>
+                  <ImageCarousel pokemon={activePokemon} />
+                </DataWithHeading>
+              </>
+            )}
           </SimpleGrid>
         </Flex>
       </CardBody>
@@ -160,6 +197,7 @@ export const ActivePokemonCard: React.FC = () => {
                 aria-label='Next pokemon'
                 variant='ghost'
                 icon={<ArrowForwardIcon {...arrowProps} />}
+                onClick={rightArrowOnClick}
               />
             </Tooltip>
           ) : activePokemon?.id === pokemon.length ? (
@@ -168,6 +206,7 @@ export const ActivePokemonCard: React.FC = () => {
                 aria-label='Previous pokemon'
                 variant='ghost'
                 icon={<ArrowBackIcon {...arrowProps} />}
+                onClick={leftArrowOnClick}
               />
             </Tooltip>
           ) : (
@@ -177,6 +216,7 @@ export const ActivePokemonCard: React.FC = () => {
                   aria-label='Previous pokemon'
                   variant='ghost'
                   icon={<ArrowBackIcon {...arrowProps} />}
+                  onClick={leftArrowOnClick}
                 />
               </Tooltip>
               <Tooltip label={surroundingPokemon.next}>
@@ -184,6 +224,7 @@ export const ActivePokemonCard: React.FC = () => {
                   aria-label='Next pokemon'
                   variant='ghost'
                   icon={<ArrowForwardIcon {...arrowProps} />}
+                  onClick={rightArrowOnClick}
                 />
               </Tooltip>
             </>

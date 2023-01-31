@@ -6,15 +6,13 @@ import {
   ResourceFor,
   NamedAPIResource,
 } from '../types';
+import { PokemonUtils } from '../utils/pokemon';
 
-export function usePokemon(
-  limit: number,
-  offset: number
-): ResourceFor['results'];
+export function usePokemon(limit: number, offset: number): NamedAPIResource[];
 export function usePokemon(url: string): Pokemon;
 
 export function usePokemon(
-  arg1: number | string = 50,
+  arg1: number | string,
   arg2?: number
 ): NamedAPIResource[] | Pokemon | null {
   const [pokemon, setPokemon] = useState<
@@ -28,11 +26,13 @@ export function usePokemon(
 
         setPokemon(data);
       } else {
-        const { data } = await axios.get<ResourceFor>(
-          `https://pokeapi.co/api/v2/pokemon?limit=${arg1}&offset=${arg2}`
+        const { results } = await PokemonUtils.getResource(
+          'pokemon',
+          arg1,
+          arg2
         );
 
-        setPokemon(data.results);
+        setPokemon(results);
       }
     };
 

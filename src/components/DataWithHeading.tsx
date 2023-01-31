@@ -6,7 +6,7 @@ import {
   IconButton,
   IconButtonProps,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { forwardRef } from 'react';
 
 interface Props {
   gap: FlexProps['gap'];
@@ -18,24 +18,38 @@ interface Props {
 
 export type BaseHeadingProps = Pick<Props, 'gap' | 'headingSize'>;
 
-export const DataWithHeading: React.FC<Props> = ({
-  children,
-  gap,
-  headingSize,
-  text,
-  icon,
-}) => {
-  return (
-    <Flex direction='column' gap={gap}>
-      {icon ? (
-        <Flex justify='space-between' align='center'>
+const test = forwardRef<HTMLDivElement, Props>(
+  ({ children, gap, headingSize, text, icon }, ref) => {
+    return (
+      <Flex direction='column' gap={gap} ref={ref}>
+        {icon ? (
+          <Flex justify='space-between' align='center'>
+            <Heading size={headingSize}>{text}</Heading>
+            <IconButton aria-label='' as={icon} variant='ghost' role='button' />
+          </Flex>
+        ) : (
           <Heading size={headingSize}>{text}</Heading>
-          <IconButton aria-label='' as={icon} variant='ghost' role='button' />
-        </Flex>
-      ) : (
-        <Heading size={headingSize}>{text}</Heading>
-      )}
-      {children}
-    </Flex>
-  );
-};
+        )}
+        {children}
+      </Flex>
+    );
+  }
+);
+
+export const DataWithHeading = forwardRef<HTMLDivElement, Props>(
+  ({ children, gap, headingSize, text, icon }, ref) => {
+    return (
+      <Flex direction='column' gap={gap} ref={ref}>
+        {icon ? (
+          <Flex justify='space-between' align='center'>
+            <Heading size={headingSize}>{text}</Heading>
+            <IconButton aria-label='' as={icon} variant='ghost' role='button' />
+          </Flex>
+        ) : (
+          <Heading size={headingSize}>{text}</Heading>
+        )}
+        {children}
+      </Flex>
+    );
+  }
+);

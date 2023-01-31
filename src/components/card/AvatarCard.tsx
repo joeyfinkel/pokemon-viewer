@@ -8,20 +8,25 @@ import {
 } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useActivePokemon } from '../context/activePokemonContext';
-import { Pokemon } from '../types';
+import { useActivePokemon } from '../../context/activePokemonContext';
+import { Pokemon } from '../../types';
 
-interface Props {
+interface Props extends CardProps {
   url: string;
-  height?: CardProps['maxH'];
-  width?: CardProps['maxW'];
 }
 
-export const PokemonAvatarCard: React.FC<Props> = ({ url, height, width }) => {
+export const PokemonAvatarCard: React.FC<Props> = ({
+  url,
+  height,
+  width,
+  ...rest
+}) => {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [color, setColor] = useState<CardProps['bgColor']>('gray.400');
 
-  const { setActivePokemon } = useActivePokemon();
+  const { activePokemon, setActivePokemon } = useActivePokemon();
+
+  const activeColor = 'gray.500';
 
   useEffect(() => {
     const getData = async () => {
@@ -39,13 +44,13 @@ export const PokemonAvatarCard: React.FC<Props> = ({ url, height, width }) => {
       maxH={height}
       variant='elevated'
       overflow='hidden'
-      me='3'
       direction='row'
-      bgColor={color}
+      bgColor={activePokemon?.name === pokemon?.name ? activeColor : color}
       role='button'
       onClick={() => setActivePokemon?.(pokemon)}
-      onMouseEnter={() => setColor('gray.500')}
+      onMouseEnter={() => setColor(activeColor)}
       onMouseLeave={() => setColor('gray.400')}
+      {...rest}
     >
       <CardHeader>
         <Flex alignItems='center' gap='2'>

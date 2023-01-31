@@ -1,59 +1,88 @@
 export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
-type y = Entries<Pokemon['sprites']>
-// // Pokemon Types
-// export type ResourceOptions =
-//   | 'ability'
-//   | 'berry'
-//   | 'berry-firmness'
-//   | 'berry-flavor'
-//   | 'characteristic'
-//   | 'contest-effect'
-//   | 'contest-type'
-//   | 'egg-group'
-//   | 'encounter-condition'
-//   | 'encounter-condition-value'
-//   | 'encounter-method'
-//   | 'evolution-chain'
-//   | 'evolution-trigger'
-//   | 'gender'
-//   | 'generation'
-//   | 'growth-rate'
-//   | 'item'
-//   | 'item-attribute'
-//   | 'item-category'
-//   | 'item-fling-effect'
-//   | 'item-pocket'
-//   | 'language'
-//   | 'location'
-//   | 'location-area'
-//   | 'machine'
-//   | 'move'
-//   | 'move-ailment'
-//   | 'move-battle-style'
-//   | 'move-category'
-//   | 'move-damage-class'
-//   | 'move-learn-method'
-//   | 'move-target'
-//   | 'nature'
-//   | 'pal-park-area'
-//   | 'pokeathlon-stat'
-//   | 'pokedex'
-//   | 'pokemon'
-//   | 'pokemon-color'
-//   | 'pokemon-form'
-//   | 'pokemon-habitat'
-//   | 'pokemon-shape'
-//   | 'pokemon-species'
-//   | 'region'
-//   | 'stat'
-//   | 'super-contest-effect'
-//   | 'type'
-//   | 'version'
-//   | 'version-group';
-// type numberTest = 1 | 2 | 3 | 4;
-// export type ResourceUrl<T extends ResourceOptions> =
-//   `https://pokeapi.co/api/v2/${T}`;
-// export type ResourceEndpointObject = { [x in ResourceOptions]: ResourceUrl<x> };
+type y = Entries<Pokemon['sprites']>;
+// Pokemon Types
+export type ResourceOptions =
+  | 'ability'
+  | 'berry'
+  | 'berry-firmness'
+  | 'berry-flavor'
+  | 'characteristic'
+  | 'contest-effect'
+  | 'contest-type'
+  | 'egg-group'
+  | 'encounter-condition'
+  | 'encounter-condition-value'
+  | 'encounter-method'
+  | 'evolution-chain'
+  | 'evolution-trigger'
+  | 'gender'
+  | 'generation'
+  | 'growth-rate'
+  | 'item'
+  | 'item-attribute'
+  | 'item-category'
+  | 'item-fling-effect'
+  | 'item-pocket'
+  | 'language'
+  | 'location'
+  | 'location-area'
+  | 'machine'
+  | 'move'
+  | 'move-ailment'
+  | 'move-battle-style'
+  | 'move-category'
+  | 'move-damage-class'
+  | 'move-learn-method'
+  | 'move-target'
+  | 'nature'
+  | 'pal-park-area'
+  | 'pokeathlon-stat'
+  | 'pokedex'
+  | 'pokemon'
+  | 'pokemon-color'
+  | 'pokemon-form'
+  | 'pokemon-habitat'
+  | 'pokemon-shape'
+  | 'pokemon-species'
+  | 'region'
+  | 'stat'
+  | 'super-contest-effect'
+  | 'type'
+  | 'version'
+  | 'version-group';
+
+export type TypeOptions =
+  | 'normal'
+  | 'fighting'
+  | 'flying'
+  | 'poison'
+  | 'ground'
+  | 'rock'
+  | 'bug'
+  | 'ghost'
+  | 'steel'
+  | 'fire'
+  | 'water'
+  | 'grass'
+  | 'electric'
+  | 'psychic'
+  | 'ice'
+  | 'dragon'
+  | 'dark'
+  | 'fairy'
+  | 'unknown'
+  | 'shadow';
+
+export type ResourceType<T extends ResourceOptions, R> = { [x in T]: R }[T];
+export type ResourceUrl<T extends ResourceOptions> =
+  `https://pokeapi.co/api/v2/${T}`;
+export type ResourceUrlWithLimit<
+  Resource extends ResourceOptions,
+  Limit extends number,
+  Offset extends number = 0
+> = `https://pokeapi.co/api/v2/${Resource}?limit=${Limit}&offset=${Offset}`;
+export type ResourceEndpoint<T extends ResourceOptions> = ResourceUrl<T>;
+export type ResourceEndpointObject = { [x in ResourceOptions]: ResourceUrl<x> };
 // export type ResourceEntries = Entries<ResourceEndpointObject>;
 // type URL<T extends ResourceOptions, U extends number> = {
 //   [x in U]: `${ResourceUrl<T>}/${U}`;
@@ -70,11 +99,20 @@ type y = Entries<Pokemon['sprites']>
 //   O extends number = 20,
 //   L extends number = 20
 // > = `${ResourceUrl<T>}?offset=${O}&limit=${L}`;
-export type ResourceFor = {
+// export type ResourceFor<T extends ResourceOptions> = {
+//   count: number;
+//   next: string | null;
+//   previous: null;
+//   results: NamedAPIResource<T>[];
+// };
+export type ResourceFor<
+  T extends ResourceOptions,
+  R extends string = string
+> = {
   count: number;
   next: string | null;
   previous: null;
-  results: NamedAPIResource[];
+  results: NamedAPIResource<ResourceType<T, R>>[];
 };
 
 interface Ability {
@@ -102,8 +140,8 @@ interface Language {
   names: Name[];
 }
 
-interface NamedAPIResource {
-  name: string;
+interface NamedAPIResource<T extends string = string> {
+  name: T;
   url: string;
 }
 
@@ -198,7 +236,7 @@ interface PokemonMove {
 
 interface PokemonType {
   slot: number;
-  type: Type;
+  type: NamedAPIResource<TypeOptions>;
 }
 
 interface PokemonTypePast {

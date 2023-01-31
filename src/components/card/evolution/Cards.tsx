@@ -1,8 +1,8 @@
 import { Flex } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { BaseHeadingProps, DataWithHeading } from './DataWithHeading';
-import { EvolutionCard } from './EvolutionCard';
-import { PokemonAvatarCard } from './PokemonAvatarCard';
+import { BaseHeadingProps, DataWithHeading } from '../../DataWithHeading';
+import { EvolutionCard } from './Card';
+import { PokemonAvatarCard } from '../AvatarCard';
 
 interface Props extends BaseHeadingProps {
   names: (string | undefined)[];

@@ -2,15 +2,21 @@ import {
   Button,
   Card,
   CardBody,
-  CardFooter, CardHeader, CardProps, Center,
+  CardFooter,
+  CardHeader,
+  CardProps,
+  Center,
+  Flex,
   Heading,
-  Image, Stack
+  Image,
+  Stack,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useActivePokemon } from '../context/activePokemonContext';
-import { Pokemon } from '../types';
-import { BasicInformation } from './BasicInformation';
+import { useActivePokemon } from '../../context/activePokemonContext';
+import { Pokemon } from '../../types';
+import { BasicInformation } from '../BasicInformation';
+import { Types } from '../Types';
 
 interface Props {
   url: string;
@@ -56,7 +62,10 @@ export const PokemonCard: React.FC<Props> = ({
     >
       <Stack spacing={1}>
         <CardHeader>
-          <Heading size='md'>{pokemon?.name?.replaceAll('_', ' ')}</Heading>
+          <Flex direction='column' align='flex-start' gap='2'>
+            <Heading size='md'>{pokemon?.name?.replaceAll('_', ' ')}</Heading>
+            {pokemon && <Types pokemon={pokemon} gap='3' />}
+          </Flex>
         </CardHeader>
         <Center>
           <Image
