@@ -11,13 +11,14 @@ import { useActivePokemon } from '../context/activePokemonContext';
 
 interface Props extends Pick<SimpleGridProps, 'spacing' | 'templateColumns'> {
   active: boolean;
+  limit: number;
+  offset: number;
 }
 
-export const PokemonWrapper: React.FC<Props> = ({ active }) => {
+export const PokemonWrapper: React.FC<Props> = ({ active, limit, offset }) => {
   const [, setParams] = useSearchParams();
-  const params = { limit: 560, offset: 0 };
   const parentRef = useRef<HTMLDivElement>(null);
-  const pokemon = usePokemon(params.limit, params.offset);
+  const pokemon = usePokemon(limit, offset);
   const { activePokemon } = useActivePokemon();
 
   const rowVirtualizer = useVirtualizer({
@@ -30,8 +31,8 @@ export const PokemonWrapper: React.FC<Props> = ({ active }) => {
   useEffect(() => {
     const setSearchParams = () => {
       const baseParams = {
-        limit: params.limit.toString(),
-        offset: params.offset.toString(),
+        limit: limit.toString(),
+        offset: offset.toString(),
       };
 
       setParams(

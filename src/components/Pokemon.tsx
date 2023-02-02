@@ -4,7 +4,12 @@ import { ActivePokemonContextProvider } from '../context/activePokemonContext';
 import { ActivePokemonCard } from './card/ActiveCard';
 import { PokemonWrapper } from './PokemonWrapper';
 
-export const Pokemon: React.FC = () => {
+interface Props {
+  limit: number;
+  offset: number;
+}
+
+export const Pokemon: React.FC<Props> = ({ limit, offset }) => {
   const [active, setActive] = useState(false);
 
   return (
@@ -19,14 +24,14 @@ export const Pokemon: React.FC = () => {
         {active ? (
           <HStack spacing={4} overflowY='hidden'>
             <Box maxH='100vh' overflowY='scroll' overflowX='hidden'>
-              <PokemonWrapper active={active} />
+              <PokemonWrapper active={active} limit={limit} offset={offset} />
             </Box>
             <Box flexGrow='1'>
               <ActivePokemonCard />
             </Box>
           </HStack>
         ) : (
-          <PokemonWrapper active={active} />
+          <PokemonWrapper active={active} limit={limit} offset={offset} />
         )}
       </Container>
     </ActivePokemonContextProvider>
