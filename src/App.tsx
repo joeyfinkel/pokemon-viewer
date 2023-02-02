@@ -6,7 +6,7 @@ function App() {
   return (
     <Routes>
       <Route
-        path='/'
+        path='/pokemon-viewer'
         element={
           <div>
             <Link to='/pokemon'>Pokemon</Link>
