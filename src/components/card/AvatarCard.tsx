@@ -1,15 +1,11 @@
-import {
-  Avatar,
-  Card,
-  CardHeader,
-  CardProps,
-  Flex,
-  Text,
-} from '@chakra-ui/react';
+import { CardProps } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useActivePokemon } from '../../context/activePokemonContext';
+import { useCurrentParams } from '../../hooks/useCurrentParams';
 import { Pokemon } from '../../types';
+import { BaseAvatarCard } from './BaseAvatarCard';
 
 interface Props extends CardProps {
   url: string;
@@ -23,41 +19,51 @@ export const PokemonAvatarCard: React.FC<Props> = ({
 }) => {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [color, setColor] = useState<CardProps['bgColor']>('gray.400');
+  const [params, setParams] = useSearchParams();
 
   const { activePokemon, setActivePokemon } = useActivePokemon();
 
+  const currentParams = useCurrentParams(true);
+
   const activeColor = 'gray.500';
+
+  const onClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setActivePokemon?.(pokemon);
+
+    if (params.has('id')) {
+      if (pokemon?.id) {
+        const { id } = pokemon;
+        const newParams = new URLSearchParams({
+          ...currentParams,
+          id: id.toString(),
+        });
+
+        setParams(newParams);
+      }
+    }
+  };
 
   useEffect(() => {
     const getData = async () => {
-      const { data: currentPokemon } = await axios.get<Pokemon>(url);
+      const { data } = await axios.get<Pokemon>(url);
 
-      setPokemon(currentPokemon);
+      setPokemon(data);
     };
 
     getData();
   }, []);
 
   return (
-    <Card
+    <BaseAvatarCard
+      pokemon={pokemon}
       maxW={width}
       maxH={height}
-      variant='elevated'
-      overflow='hidden'
-      direction='row'
       bgColor={activePokemon?.name === pokemon?.name ? activeColor : color}
-      role='button'
-      onClick={() => setActivePokemon?.(pokemon)}
+      onClick={onClick}
       onMouseEnter={() => setColor(activeColor)}
       onMouseLeave={() => setColor('gray.400')}
       {...rest}
-    >
-      <CardHeader>
-        <Flex alignItems='center' gap='2'>
-          <Avatar src={pokemon?.sprites?.front_default} name={pokemon?.name} />
-          <Text fontWeight='bold'>{pokemon?.name?.replaceAll('_', ' ')}</Text>
-        </Flex>
-      </CardHeader>
-    </Card>
+    />
   );
 };

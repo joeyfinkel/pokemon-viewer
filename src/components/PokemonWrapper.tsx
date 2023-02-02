@@ -1,20 +1,24 @@
 import { SimpleGrid, SimpleGridProps } from '@chakra-ui/react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { usePokemon } from '../hooks/usePokemon';
 import { PokemonUtils } from '../utils/pokemon';
 import { PokemonAvatarCard } from './card/AvatarCard';
 import { PokemonCard } from './card/Card';
 import { DataWithHeading } from './DataWithHeading';
+import { useSearchParams } from 'react-router-dom';
+import { useActivePokemon } from '../context/activePokemonContext';
 
 interface Props extends Pick<SimpleGridProps, 'spacing' | 'templateColumns'> {
   active: boolean;
 }
 
 export const PokemonWrapper: React.FC<Props> = ({ active }) => {
-  const limit = 100000;
+  const [, setParams] = useSearchParams();
+  const params = { limit: 560, offset: 0 };
   const parentRef = useRef<HTMLDivElement>(null);
-  const pokemon = usePokemon(limit, 90);
+  const pokemon = usePokemon(params.limit, params.offset);
+  const { activePokemon } = useActivePokemon();
 
   const rowVirtualizer = useVirtualizer({
     count: pokemon.length,
@@ -22,6 +26,26 @@ export const PokemonWrapper: React.FC<Props> = ({ active }) => {
     estimateSize: () => pokemon.length,
     getScrollElement: () => parentRef.current,
   });
+
+  useEffect(() => {
+    const setSearchParams = () => {
+      const baseParams = {
+        limit: params.limit.toString(),
+        offset: params.offset.toString(),
+      };
+
+      setParams(
+        activePokemon?.id
+          ? {
+              ...baseParams,
+              id: activePokemon?.id.toString(),
+            }
+          : baseParams
+      );
+    };
+
+    setSearchParams();
+  }, []);
 
   return (
     <DataWithHeading text='Pokemon' gap='3' headingSize='xl' ref={parentRef}>
@@ -37,7 +61,13 @@ export const PokemonWrapper: React.FC<Props> = ({ active }) => {
           const id = PokemonUtils.getPokemonId(url);
 
           return active ? (
-            <PokemonAvatarCard key={id} url={url} height='10em' width='md' me='3' />
+            <PokemonAvatarCard
+              key={id}
+              url={url}
+              height='10em'
+              width='md'
+              me='3'
+            />
           ) : (
             <PokemonCard key={id} url={url} height='md' width='md' />
           );

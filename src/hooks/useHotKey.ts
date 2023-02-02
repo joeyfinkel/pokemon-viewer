@@ -6,7 +6,7 @@ export function useHotKey() {
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
       setKey(event.key);
-      console.log(`Key pressed: ${event.key}`);
+      // console.log(`Key pressed: ${event.key}`);
     },
     [setKey]
   );

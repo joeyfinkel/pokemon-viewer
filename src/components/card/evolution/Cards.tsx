@@ -1,5 +1,5 @@
 import { Flex } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BaseHeadingProps, DataWithHeading } from '../../DataWithHeading';
 import { EvolutionCard } from './Card';
 import { PokemonAvatarCard } from '../AvatarCard';
@@ -15,7 +15,14 @@ export const EvolutionCards: React.FC<Props> = ({
 }) => {
   const [current, setCurrent] = useState(names?.[0]);
 
-  const url = (name: string) => `https://pokeapi.co/api/v2/pokemon/${name}`;
+  const setUrl = (name: string | undefined) =>
+    name ? `https://pokeapi.co/api/v2/pokemon/${name}` : '';
+
+  useEffect(() => {
+    const resetName = () => setCurrent(names?.[0]);
+
+    resetName();
+  }, []);
 
   return (
     <DataWithHeading gap={gap} headingSize={headingSize} text='Evolutions'>
@@ -30,14 +37,14 @@ export const EvolutionCards: React.FC<Props> = ({
           {[...new Set(names)]?.map((name, idx) => (
             <EvolutionCard
               key={idx}
-              url={url(name ?? '')}
+              url={setUrl(name)}
               height='200px'
               width='200px'
               onClick={() => setCurrent(name)}
             />
           ))}
         </Flex>
-        <PokemonAvatarCard url={url(current ?? '')} />
+        <PokemonAvatarCard url={setUrl(current)} />
       </Flex>
     </DataWithHeading>
   );

@@ -9,12 +9,16 @@ import {
   Flex,
   Heading,
   Image,
+  Link,
   Stack,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { useSearchParams, Link as RouterLink } from 'react-router-dom';
 import { useActivePokemon } from '../../context/activePokemonContext';
 import { Pokemon } from '../../types';
+import { PokemonUtils } from '../../utils/pokemon';
+import { capitalizeWord } from '../../utils/utils';
 import { BasicInformation } from '../BasicInformation';
 import { Types } from '../Types';
 
@@ -32,12 +36,15 @@ export const PokemonCard: React.FC<Props> = ({
   direction,
 }: Props) => {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
+  const [param] = useSearchParams();
 
   const { active, setActive, setActivePokemon } = useActivePokemon();
 
   const onClick = () => {
     setActive?.(!active);
     setActivePokemon?.(pokemon);
+
+    if (pokemon?.id) param.append('id', pokemon?.id.toString());
   };
 
   useEffect(() => {
@@ -63,7 +70,7 @@ export const PokemonCard: React.FC<Props> = ({
       <Stack spacing={1}>
         <CardHeader>
           <Flex direction='column' align='flex-start' gap='2'>
-            <Heading size='md'>{pokemon?.name?.replaceAll('_', ' ')}</Heading>
+            <Heading size='md'>{PokemonUtils.capitalizeName(pokemon)}</Heading>
             {pokemon && <Types pokemon={pokemon} gap='3' />}
           </Flex>
         </CardHeader>

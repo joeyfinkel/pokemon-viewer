@@ -10,16 +10,13 @@ interface Props {
 
 export const ImageCarousel: React.FC<Props> = ({ pokemon }) => {
   const entries = Object.entries(pokemon.sprites) as Entries<PokemonSprites>[];
-  const [currentImage, setCurrentImage] = useState(
-    entries.find(([key]) => key === 'front_default')
-  );
+  const foundEntry = entries.find(([key]) => key === 'front_default');
+  const [currentImage, setCurrentImage] = useState(foundEntry);
   const [imgName, imgSrc] = currentImage ?? [];
   const name = imgName?.replaceAll('_', ' ');
 
   useEffect(() => {
-    const resetPicture = () => {
-      setCurrentImage(entries.find(([key]) => key === 'front_default'));
-    };
+    const resetPicture = () => setCurrentImage(foundEntry);
 
     resetPicture();
   }, [pokemon]);

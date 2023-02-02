@@ -4,7 +4,7 @@ import { ActivePokemonContextProvider } from '../context/activePokemonContext';
 import { ActivePokemonCard } from './card/ActiveCard';
 import { PokemonWrapper } from './PokemonWrapper';
 
-export const Pokemon = () => {
+export const Pokemon: React.FC = () => {
   const [active, setActive] = useState(false);
 
   return (

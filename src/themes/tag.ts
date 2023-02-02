@@ -41,7 +41,9 @@ const theme = Object.entries(colors)
   })
   .reduce((acc, post) => {
     const key = Object.keys(post)[0];
+
     acc[key] = post[key];
+
     return acc;
   });
 

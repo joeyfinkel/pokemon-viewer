@@ -1,11 +1,13 @@
 import axios from 'axios';
 import {
+  Pokemon,
   ResourceFor,
   ResourceOptions,
   ResourceUrl,
   ResourceUrlWithLimit,
   TypeOptions,
 } from '../types';
+import { capitalizeWord } from './utils';
 
 export namespace PokemonUtils {
   /**
@@ -91,5 +93,17 @@ export namespace PokemonUtils {
     const { results } = await getResource<'type', TypeOptions>('type');
 
     return results.map(({ name }) => name);
+  }
+
+  export function capitalizeName(pokemon: Pokemon | null) {
+    const name = pokemon?.name;
+
+    if (name) {
+      const replaced = name.replaceAll('_', ' ');
+
+      return capitalizeWord(replaced);
+    }
+
+    return '';
   }
 }

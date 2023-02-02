@@ -15,41 +15,41 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { useActivePokemon } from '../../context/activePokemonContext';
+import { useCurrentParams } from '../../hooks/useCurrentParams';
+import { useHotKey } from '../../hooks/useHotKey';
 import { usePokemon } from '../../hooks/usePokemon';
-import {
-  Entries,
-  EvolutionChain,
-  Pokemon,
-  PokemonSpecies,
-  PokemonSprites,
-} from '../../types';
+import { EvolutionChain, Pokemon, PokemonSpecies } from '../../types';
 import { capitalizeWord } from '../../utils/utils';
 import { BasicInformation } from '../BasicInformation';
 import { BaseHeadingProps, DataWithHeading } from '../DataWithHeading';
+import { Types } from '../Types';
 import { EvolutionCards } from './evolution/Cards';
 import { ImageCarousel } from './imageCarousel/ImageCarousel';
-import { Types } from '../Types';
-import { useHotKey } from '../../hooks/useHotKey';
 
 export const ActivePokemonCard: React.FC = () => {
+  const [currPokemon, setCurrPokemon] = useState<Pokemon | null>(null);
   const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
   const [allEvolutionNames, setAllEvolutionNames] = useState<
     (string | undefined)[]
   >([]);
 
-  const { active, activePokemon, setActive, setActivePokemon, setMainPicture } =
-    useActivePokemon();
+  const { setActive, setActivePokemon } = useActivePokemon();
+
+  const [, setParams] = useSearchParams();
 
   const pokemon = usePokemon(50, 0);
   const key = useHotKey();
+  const location = useLocation();
+  const currentParams = useCurrentParams();
 
   const headingsProps: BaseHeadingProps = { gap: 4, headingSize: 'md' };
   const arrowProps: IconProps = { boxSize: 8, role: 'button', focusable: true };
 
   const surroundingPokemon = useMemo(() => {
-    const index = pokemon.findIndex(({ name }) => name === activePokemon?.name);
+    const index = pokemon.findIndex(({ name }) => name === currPokemon?.name);
     const length = pokemon.length - 1;
     const next = index === length ? index : index === -1 ? index : index + 1;
     const prev = index === 0 ? index : index === -1 ? index : index - 1;
@@ -58,28 +58,58 @@ export const ActivePokemonCard: React.FC = () => {
       next: index === -1 ? undefined : pokemon[next].name,
       previous: index === -1 ? undefined : pokemon[prev].name,
     };
-  }, [allPokemon, activePokemon, pokemon]);
+  }, [allPokemon, currPokemon, pokemon]);
 
-  const rightArrowOnClick = () => {
-    const index = allPokemon.findIndex(
-      ({ name }) => name === surroundingPokemon.next
-    );
-
-    setActivePokemon?.(allPokemon[index]);
+  const close = () => {
+    setActive?.(false);
+    setActivePokemon?.(null);
   };
 
-  const leftArrowOnClick = () => {
+  const updatePokemon = (updateType: keyof typeof surroundingPokemon) => {
     const index = allPokemon.findIndex(
-      ({ name }) => name === surroundingPokemon.previous
+      ({ name }) => name === surroundingPokemon[updateType]
     );
+    const { id } = allPokemon[index];
+    const { id: pId, ...rest } = currentParams;
+    const newParams = new URLSearchParams({
+      ...rest,
+      id: id.toString(),
+    });
 
     setActivePokemon?.(allPokemon[index]);
+    setParams(newParams);
   };
+
+  const rightArrowOnClick = () => updatePokemon('next');
+
+  const leftArrowOnClick = () => updatePokemon('previous');
+
+  useEffect(() => {
+    const getId = () => {
+      const { search } = location;
+      const split = search.split('&');
+      const idIdx = split.findIndex((value) => value.includes('id'));
+      const id = split[idIdx]?.replace('id=', '');
+
+      return id;
+    };
+
+    const getPokemon = async () => {
+      const id = getId();
+      const { data } = await axios.get<Pokemon>(
+        `https://pokeapi.co/api/v2/pokemon/${id}`
+      );
+
+      setCurrPokemon(data);
+    };
+
+    getPokemon();
+  }, [location]);
 
   useEffect(() => {
     const getAllEvolutionNames = async () => {
       const { data: currentPokemonSpecies } = await axios.get<PokemonSpecies>(
-        `https://pokeapi.co/api/v2/pokemon-species/${activePokemon?.id}`
+        `https://pokeapi.co/api/v2/pokemon-species/${currPokemon?.id}`
       );
       const evolutionChain = currentPokemonSpecies.evolution_chain.url;
       const { data: nextEvolutionObj } = await axios.get<EvolutionChain>(
@@ -87,9 +117,7 @@ export const ActivePokemonCard: React.FC = () => {
       );
       const { evolves_to, species } = nextEvolutionObj.chain;
       const curr =
-        species.name === activePokemon?.name
-          ? species.name
-          : activePokemon?.name;
+        species.name === currPokemon?.name ? species.name : currPokemon?.name;
       const evolutions = evolves_to
         .map(({ species, evolves_to }) => {
           const currEvolutions = [species.name];
@@ -105,12 +133,10 @@ export const ActivePokemonCard: React.FC = () => {
         .flat();
 
       setAllEvolutionNames([curr, ...evolutions]);
-
-      return [curr, ...evolutions];
     };
 
     getAllEvolutionNames();
-  }, [activePokemon]);
+  }, [currPokemon]);
 
   useEffect(() => {
     const getAllPokemon = async () => {
@@ -132,6 +158,7 @@ export const ActivePokemonCard: React.FC = () => {
     const switchPokemon = () => {
       if (key === 'ArrowRight') rightArrowOnClick();
       if (key === 'ArrowLeft') leftArrowOnClick();
+      if (key === 'Escape') close();
     };
 
     switchPokemon();
@@ -143,26 +170,26 @@ export const ActivePokemonCard: React.FC = () => {
         <Flex justify='space-between' align='center'>
           <Flex align='center' gap='2'>
             <Avatar
-              src={activePokemon?.sprites.front_default}
-              name={activePokemon?.name}
+              src={currPokemon?.sprites.front_default}
+              name={currPokemon?.name}
               size='lg'
             />
             <Heading size='xl' fontWeight='bold'>
-              {capitalizeWord(activePokemon?.name ?? '')}
+              {currPokemon?.name && capitalizeWord(currPokemon?.name)}
             </Heading>
           </Flex>
-          <CloseButton size='lg' onClick={() => setActive?.(!active)} />
+          <CloseButton size='lg' onClick={close} />
         </Flex>
       </CardHeader>
       <CardBody>
         <Flex direction='column'>
           <SimpleGrid templateColumns='0.8fr 1.2fr' gap='2'>
-            {activePokemon && (
+            {currPokemon && (
               <>
                 <Flex direction='column' justify='space-between' gap='4'>
                   <DataWithHeading {...headingsProps} text='Basic Information'>
                     <BasicInformation
-                      pokemon={activePokemon}
+                      pokemon={currPokemon}
                       border='1px solid black'
                       borderRadius='1rem'
                       p='2'
@@ -171,7 +198,7 @@ export const ActivePokemonCard: React.FC = () => {
 
                   <DataWithHeading {...headingsProps} text='Types'>
                     <Box border='1px solid black' borderRadius='1rem' p='2'>
-                      <Types pokemon={activePokemon} gap='2' />
+                      <Types pokemon={currPokemon} gap='2' />
                     </Box>
                   </DataWithHeading>
 
@@ -182,7 +209,7 @@ export const ActivePokemonCard: React.FC = () => {
                 </Flex>
 
                 <DataWithHeading {...headingsProps} text='Images'>
-                  <ImageCarousel pokemon={activePokemon} />
+                  <ImageCarousel pokemon={currPokemon} />
                 </DataWithHeading>
               </>
             )}
@@ -191,7 +218,7 @@ export const ActivePokemonCard: React.FC = () => {
       </CardBody>
       <CardFooter justify='flex-end'>
         <Flex justify='flex-end' gap='2'>
-          {activePokemon?.id === 1 ? (
+          {currPokemon?.id === 1 ? (
             <Tooltip label={surroundingPokemon.next}>
               <IconButton
                 aria-label='Next pokemon'
@@ -200,7 +227,7 @@ export const ActivePokemonCard: React.FC = () => {
                 onClick={rightArrowOnClick}
               />
             </Tooltip>
-          ) : activePokemon?.id === pokemon.length ? (
+          ) : currPokemon?.id === pokemon.length ? (
             <Tooltip label={surroundingPokemon.previous}>
               <IconButton
                 aria-label='Previous pokemon'
