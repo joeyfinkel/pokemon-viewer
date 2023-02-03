@@ -59,7 +59,7 @@ export const PokemonAvatarCard: React.FC<Props> = ({
       pokemon={pokemon}
       maxW={width}
       maxH={height}
-      bgColor={activePokemon?.name === pokemon?.name ? activeColor : color}
+      bgColor={activePokemon?.id === pokemon?.id ? activeColor : color}
       onClick={onClick}
       onMouseEnter={() => setColor(activeColor)}
       onMouseLeave={() => setColor('gray.400')}

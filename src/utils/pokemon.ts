@@ -95,13 +95,21 @@ export namespace PokemonUtils {
     return results.map(({ name }) => name);
   }
 
-  export function capitalizeName(pokemon: Pokemon | null) {
-    const name = pokemon?.name;
-
-    if (name) {
-      const replaced = name.replaceAll('_', ' ');
+  export function capitalizeName(pokemon: Pokemon | null): string;
+  export function capitalizeName(name: string): string;
+  export function capitalizeName(pokemon: Pokemon | string | null) {
+    if (typeof pokemon === 'string') {
+      const replaced = pokemon.replaceAll('_', ' ');
 
       return capitalizeWord(replaced);
+    } else {
+      const name = pokemon?.name;
+
+      if (name) {
+        const replaced = name.replaceAll('_', ' ');
+
+        return capitalizeWord(replaced);
+      }
     }
 
     return '';

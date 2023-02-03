@@ -13,6 +13,7 @@ import {
   IconProps,
   SimpleGrid,
   Tooltip,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -35,6 +36,7 @@ export const ActivePokemonCard: React.FC = () => {
   const [allEvolutionNames, setAllEvolutionNames] = useState<
     (string | undefined)[]
   >([]);
+  const [isMobile] = useMediaQuery('(max-width: 600px)');
 
   const { setActive, setActivePokemon } = useActivePokemon();
 
@@ -165,7 +167,12 @@ export const ActivePokemonCard: React.FC = () => {
   }, [key]);
 
   return (
-    <Card overflow='hidden' variant='outline' height='95vh' mb='2'>
+    <Card
+      overflow='hidden'
+      variant='outline'
+      height={{ sm: '80vh', xl: '98vh' }}
+      mb='2'
+    >
       <CardHeader>
         <Flex justify='space-between' align='center'>
           <Flex align='center' gap='2'>
@@ -181,31 +188,41 @@ export const ActivePokemonCard: React.FC = () => {
           <CloseButton size='lg' onClick={close} />
         </Flex>
       </CardHeader>
-      <CardBody>
+      <CardBody overflowY={isMobile ? 'scroll' : 'hidden'}>
         <Flex direction='column'>
-          <SimpleGrid templateColumns='0.8fr 1.2fr' gap='2'>
+          <SimpleGrid
+            templateColumns={{ sm: '1fr', md: '1fr', lg: '1fr 1fr' }}
+            gap='2'
+          >
             {currPokemon && (
               <>
                 <Flex direction='column' justify='space-between' gap='4'>
-                  <DataWithHeading {...headingsProps} text='Basic Information'>
-                    <BasicInformation
-                      pokemon={currPokemon}
-                      border='1px solid black'
-                      borderRadius='1rem'
-                      p='2'
+                  <SimpleGrid columns={{ sm: 2, lg: 1, xl: 1 }} spacing={2}>
+                    <Flex direction='column' gap='2'>
+                      <DataWithHeading
+                        {...headingsProps}
+                        text='Basic Information'
+                      >
+                        <BasicInformation
+                          pokemon={currPokemon}
+                          border='1px solid black'
+                          borderRadius='1rem'
+                          p='2'
+                        />
+                      </DataWithHeading>
+
+                      <DataWithHeading {...headingsProps} text='Types'>
+                        <Box border='1px solid black' borderRadius='1rem' p='2'>
+                          <Types pokemon={currPokemon} gap='2' />
+                        </Box>
+                      </DataWithHeading>
+                    </Flex>
+
+                    <EvolutionCards
+                      {...headingsProps}
+                      names={allEvolutionNames}
                     />
-                  </DataWithHeading>
-
-                  <DataWithHeading {...headingsProps} text='Types'>
-                    <Box border='1px solid black' borderRadius='1rem' p='2'>
-                      <Types pokemon={currPokemon} gap='2' />
-                    </Box>
-                  </DataWithHeading>
-
-                  <EvolutionCards
-                    {...headingsProps}
-                    names={allEvolutionNames}
-                  />
+                  </SimpleGrid>
                 </Flex>
 
                 <DataWithHeading {...headingsProps} text='Images'>

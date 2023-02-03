@@ -18,24 +18,6 @@ interface Props {
 
 export type BaseHeadingProps = Pick<Props, 'gap' | 'headingSize'>;
 
-const test = forwardRef<HTMLDivElement, Props>(
-  ({ children, gap, headingSize, text, icon }, ref) => {
-    return (
-      <Flex direction='column' gap={gap} ref={ref}>
-        {icon ? (
-          <Flex justify='space-between' align='center'>
-            <Heading size={headingSize}>{text}</Heading>
-            <IconButton aria-label='' as={icon} variant='ghost' role='button' />
-          </Flex>
-        ) : (
-          <Heading size={headingSize}>{text}</Heading>
-        )}
-        {children}
-      </Flex>
-    );
-  }
-);
-
 export const DataWithHeading = forwardRef<HTMLDivElement, Props>(
   ({ children, gap, headingSize, text, icon }, ref) => {
     return (

@@ -8,7 +8,7 @@ function App() {
 
   return (
     <Routes>
-      <Route
+      {/* <Route
         path='/pokemon-viewer'
         element={
           <div>
@@ -16,8 +16,8 @@ function App() {
             <Outlet />
           </div>
         }
-      />
-      <Route path='pokemon' element={<Pokemon {...params} />} />
+      /> */}
+      <Route path='pokemon-viewer' element={<Pokemon {...params} />} />
     </Routes>
   );
 }

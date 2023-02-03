@@ -25,7 +25,7 @@ export const Images: React.FC<Props> = ({
     >
       <Image
         objectFit='cover'
-        maxW={{ base: '100%', sm: '200px' }}
+        maxW={{ base: '100%', sm: '100px' }}
         src={sprite}
         alt={key}
         role='button'

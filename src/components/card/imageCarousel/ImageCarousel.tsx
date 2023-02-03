@@ -1,8 +1,10 @@
-import { Flex, Image, Text } from '@chakra-ui/react';
+import { Flex, Icon, IconButton, Image, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { Entries, Pokemon, PokemonSprites } from '../../../types';
 import { capitalizeWord } from '../../../utils/utils';
 import { Images } from './Images';
+import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import { ImageChooser } from './ImageChooser';
 
 interface Props {
   pokemon: Pokemon;
@@ -24,7 +26,7 @@ export const ImageCarousel: React.FC<Props> = ({ pokemon }) => {
   return (
     <Flex
       direction='column'
-      justify='space-between'
+      justify={{ sm: 'flex-end', xl: 'space-between' }}
       border='1px solid black'
       borderRadius='1rem'
       grow='1'
@@ -32,7 +34,7 @@ export const ImageCarousel: React.FC<Props> = ({ pokemon }) => {
       <Flex direction='column' align='center'>
         <Image
           objectFit='cover'
-          height={{ base: '100%', sm: '300px' }}
+          height={{ base: '100%', sm: 100, xl: 300 }}
           src={imgSrc}
           style={{ imageRendering: 'pixelated' }}
           loading='lazy'
@@ -40,19 +42,31 @@ export const ImageCarousel: React.FC<Props> = ({ pokemon }) => {
         <Text fontWeight='bold'>{capitalizeWord(name ?? '')}</Text>
       </Flex>
 
-      <Flex justify='center' mb='2' gap='2'>
-        {entries.map(([key, sprite], idx) =>
-          typeof sprite === 'string' ? (
-            <Images
-              key={idx}
-              currentImageName={imgName}
-              name={key}
-              onClick={() => setCurrentImage([key, sprite])}
-              entries={[key, sprite]}
-            />
-          ) : null
-        )}
-      </Flex>
+      {entries.length > 4 ? (
+        <Flex justify='space-around' align='center'>
+          <IconButton
+            aria-label='Left'
+            icon={<FaAngleLeft />}
+            variant='ghost'
+          />
+          <ImageChooser
+            entries={entries.slice(0, 4)}
+            imgName={imgName}
+            setCurrentImage={setCurrentImage}
+          />
+          <IconButton
+            aria-label='Right'
+            icon={<FaAngleRight />}
+            variant='ghost'
+          />
+        </Flex>
+      ) : (
+        <ImageChooser
+          entries={entries}
+          imgName={imgName}
+          setCurrentImage={setCurrentImage}
+        />
+      )}
     </Flex>
   );
 };

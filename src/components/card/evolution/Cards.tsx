@@ -1,4 +1,4 @@
-import { Flex } from '@chakra-ui/react';
+import { Box, Flex, useMediaQuery } from '@chakra-ui/react';
 import React, { useState, useEffect, useCallback } from 'react';
 import { BaseHeadingProps, DataWithHeading } from '../../DataWithHeading';
 import { EvolutionCard } from './Card';
@@ -14,6 +14,7 @@ export const EvolutionCards: React.FC<Props> = ({
   headingSize,
 }) => {
   const [current, setCurrent] = useState(names?.[0]);
+  const [isMobile] = useMediaQuery('(max-width: 600px)');
 
   const setUrl = (name: string | undefined) =>
     name ? `https://pokeapi.co/api/v2/pokemon/${name}` : '';
@@ -33,18 +34,22 @@ export const EvolutionCards: React.FC<Props> = ({
         borderRadius='1rem'
         p='2'
       >
-        <Flex gap='1.2'>
+        <Box
+          gap='1.2'
+          display='flex'
+          flexDirection={{ sm: 'column', md: 'row', lg: 'row', xl: 'row' }}
+        >
           {[...new Set(names)]?.map((name, idx) => (
             <EvolutionCard
               key={idx}
               url={setUrl(name)}
               height='200px'
-              width='200px'
+              width='auto'
               onClick={() => setCurrent(name)}
             />
           ))}
-        </Flex>
-        <PokemonAvatarCard url={setUrl(current)} />
+        </Box>
+        {!isMobile && <PokemonAvatarCard url={setUrl(current)} />}
       </Flex>
     </DataWithHeading>
   );
